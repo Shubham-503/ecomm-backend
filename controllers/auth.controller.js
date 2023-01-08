@@ -55,27 +55,27 @@ export const signUp = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body
 
-  if ( !email || !password) {
-      throw new CustomError('Please fill all fields', 400)
+  if (!email || !password) {
+    throw new CustomError('Please fill all fields', 400)
   }
 
-  const user = User.findOne({email}).select("+password")
+  const user = User.findOne({ email }).select("+password")
 
   if (!user) {
-      throw new CustomError('Invalid credentials', 400)
+    throw new CustomError('Invalid credentials', 400)
   }
 
   const isPasswordMatched = await user.comparePassword(password)
 
   if (isPasswordMatched) {
-      const token = user.getJwtToken()
-      user.password = undefined;
-      res.cookie("token", token, cookieOptions)
-      return res.status(200).json({
-          success: true,
-          token,
-          user
-      })
+    const token = user.getJwtToken()
+    user.password = undefined;
+    res.cookie("token", token, cookieOptions)
+    return res.status(200).json({
+      success: true,
+      token,
+      user
+    })
   }
 
   throw new CustomError('Invalid credentials - pass', 400)
@@ -93,12 +93,12 @@ export const login = asyncHandler(async (req, res) => {
 export const logout = asyncHandler(async (_req, res) => {
   // res.clearCookie()
   res.cookie("token", null, {
-      expires: new Date(Date.now()),
-      httpOnly: true
+    expires: new Date(Date.now()),
+    httpOnly: true
   })
   res.status(200).json({
-      success: true,
-      message: "Logged Out"
+    success: true,
+    message: "Logged Out"
   })
 })
 
@@ -110,43 +110,43 @@ export const logout = asyncHandler(async (_req, res) => {
  * @returns success message - email send
  ******************************************************/
 
-export const forgotPassword = asyncHandler(async(req, res) => {
-  const {email} = req.body
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body
   //check email for null or ""
 
-  const user = await User.findOne({email})
+  const user = await User.findOne({ email })
   if (!user) {
-      throw new CustomError('User not found', 404)
+    throw new CustomError('User not found', 404)
   }
   const resetToken = user.generateForgotPasswordToken()
 
-  await user.save({validateBeforeSave: false})
+  await user.save({ validateBeforeSave: false })
 
-  const resetUrl = 
-  `${req.protocol}://${req.get("host")}/api/auth/password/reset/${resetToken}`
+  const resetUrl =
+    `${req.protocol}://${req.get("host")}/api/auth/password/reset/${resetToken}`
 
   const text = `Your password reset url is
   \n\n ${resetUrl}\n\n
   `
 
   try {
-      await mailHelper({
-          email: user.email,
-          subject: "Password reset email for website",
-          text:text,
-      })
-      res.status(200).json({
-          success: true,
-          message: `Email send to ${user.email}`
-      })
+    await mailHelper({
+      email: user.email,
+      subject: "Password reset email for website",
+      text: text,
+    })
+    res.status(200).json({
+      success: true,
+      message: `Email send to ${user.email}`
+    })
   } catch (err) {
-      //roll back - clear fields and save
-      user.forgotPasswordToken = undefined
-      user.forgotPasswordExpiry = undefined
+    //roll back - clear fields and save
+    user.forgotPasswordToken = undefined
+    user.forgotPasswordExpiry = undefined
 
-      await user.save({validateBeforeSave: false})
+    await user.save({ validateBeforeSave: false })
 
-      throw new CustomError(err.message || 'Email sent failure', 500)
+    throw new CustomError(err.message || 'Email sent failure', 500)
   }
 
 })
@@ -160,26 +160,26 @@ export const forgotPassword = asyncHandler(async(req, res) => {
  ******************************************************/
 
 export const resetPassword = asyncHandler(async (req, res) => {
-  const {token: resetToken} = req.params
-  const {password, confirmPassword } = req.body
+  const { token: resetToken } = req.params
+  const { password, confirmPassword } = req.body
 
   const resetPasswordToken = crypto
-  .createHash('sha256')
-  .update(resetToken)
-  .digest('hex')
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex')
 
   // User.findOne({email: email})
   const user = await User.findOne({
-      forgotPasswordToken: resetPasswordToken,
-      forgotPasswordExpiry: {$gt: Date.now()}
+    forgotPasswordToken: resetPasswordToken,
+    forgotPasswordExpiry: { $gt: Date.now() }
   });
 
   if (!user) {
-      throw new CustomError('password token is invalid or expired', 400)
+    throw new CustomError('password token is invalid or expired', 400)
   }
 
   if (password !== confirmPassword) {
-      throw new CustomError('password and conf password does not match', 400)
+    throw new CustomError('password and conf password does not match', 400)
   }
 
   user.password = password
@@ -195,10 +195,34 @@ export const resetPassword = asyncHandler(async (req, res) => {
   //helper method for cookie can be added
   res.cookie("token", token, cookieOptions)
   res.status(200).json({
-      success:true,
-      user
+    success: true,
+    user
   })
 
 })
 
 // TODO: create a controller for change password
+export const changePassword = asyncHandler(async (req, res) => {
+  const { email, password, newPassword, confirmPassword } = req.body
+
+  if (!email || !password) {
+    throw new CustomError("email and password is required", 500)
+  }
+
+  const user = await User.find({ email })
+  if (!user || !user.comparePassword(password)) {
+    throw new CustomError("Email and Password does not match", 500)
+  }
+  if (newPassword !== confirmPassword) {
+    throw new CustomError("New password and Confirm Password does not match", 500)
+  }
+
+  user.password = newPassword
+  await user.save({ validateBeforeSave: false })
+
+  res.status(200).json({
+    success: true,
+    message: "Password changed Successfully"
+  })
+
+})
