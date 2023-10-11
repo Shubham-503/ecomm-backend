@@ -1,52 +1,51 @@
 import mongoose from "mongoose";
-import orderStatus from "../utils/orderStatus";
+import orderStatus from "../utils/orderStatus.js";
 
 const orderSchema = new mongoose.Schema(
-    {
-        products: {
-            type: [
-                {
-                    productId: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        ref: "Product",
-                        required: true
-                    },
-                    count: Number,
-                    price: Number
-                }
-            ],
-            required: true
-        },
-        user: {
+  {
+    products: {
+      type: [
+        {
+          productId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true
+            ref: "Product",
+            required: true,
+          },
+          count: Number,
+          price: Number,
         },
-        address: {
-            type: String,
-            required: true
-        },
-        phoneNumber: {
-            type: Number,
-            required: true
-        },
-        amount: {
-            type: Number,
-            required: true
-        },
-        coupon: String,
-        transactionId: String,
-        status: {
-            type: String,
-            enum: Object.values(orderStatus),
-            default: orderStatus.ORDERED,
-        },
-        //paymentMode: UPI, creditcard or wallet, COD
+      ],
+      required: true,
     },
-    {
-        timestamps: true
-    }
-)
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
+      type: Number,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    coupon: String,
+    transactionId: String,
+    status: {
+      type: String,
+      enum: Object.values(orderStatus),
+      default: orderStatus.ORDERED,
+    },
+    //paymentMode: UPI, creditcard or wallet, COD
+  },
+  {
+    timestamps: true,
+  }
+);
 
-
-export default mongoose.model("Order", orderSchema)
+export default mongoose.model("Order", orderSchema);

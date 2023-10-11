@@ -1,5 +1,6 @@
-const nodemailer = require("nodemailer");
-import config from './index'
+// const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
+import config from "./index.js";
 
 let transporter = nodemailer.createTransport({
   host: config.SMTP_MAIL_HOST,
@@ -11,5 +12,4 @@ let transporter = nodemailer.createTransport({
   },
 });
 
-
-export default transporter
+export default transporter;
