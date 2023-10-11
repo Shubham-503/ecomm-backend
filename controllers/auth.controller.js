@@ -72,7 +72,7 @@ export const login = asyncHandler(async (req, res) => {
   if (isPasswordMatched) {
     const token = user.getJwtToken();
     user.password = undefined;
-    res.cookie("tokenFromlogin", token, cookieOptions);
+    res.cookie("token", token, cookieOptions);
     return res.status(200).json({
       success: true,
       token,

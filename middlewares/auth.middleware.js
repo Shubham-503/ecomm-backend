@@ -28,3 +28,92 @@ export const isLoggedIn = asyncHandler(async (req, _res, next) => {
     throw new CustomError("NOt authorized to access this route", 401);
   }
 });
+
+export const isAdmin = asyncHandler(async (req, _res, next) => {
+  let token;
+
+  if (
+    req.cookies.token ||
+    (req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer"))
+  ) {
+    token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) {
+    throw new CustomError("NOt authorized to access this route", 401);
+  }
+
+  try {
+    const decodedJwtPayload = JWT.verify(token, config.JWT_SECRET);
+    //_id, find user based on id, set this in req.user
+    const isAdmin = await User.findOne({
+      _id: decodedJwtPayload._id,
+      role: "ADMIN",
+    });
+    console.log(isAdmin);
+    if (isAdmin) next();
+    else throw new CustomError("NOt authorized to access this route", 401);
+  } catch (error) {
+    throw new CustomError("NOt authorized to access this route", 401);
+  }
+});
+
+export const isModerator = asyncHandler(async (req, _res, next) => {
+  let token;
+
+  if (
+    req.cookies.token ||
+    (req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer"))
+  ) {
+    token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) {
+    throw new CustomError("NOt authorized to access this route", 401);
+  }
+
+  try {
+    const decodedJwtPayload = JWT.verify(token, config.JWT_SECRET);
+    //_id, find user based on id, set this in req.user
+    const isModerator = await User.findOne({
+      _id: decodedJwtPayload._id,
+      role: "MODERATOR",
+    });
+    console.log(isModerator);
+    if (isModerator) next();
+    else throw new CustomError("NOt authorized to access this route", 401);
+  } catch (error) {
+    throw new CustomError("NOt authorized to access this route", 401);
+  }
+});
+export const isAdminOrModerator = asyncHandler(async (req, _res, next) => {
+  let token;
+
+  if (
+    req.cookies.token ||
+    (req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer"))
+  ) {
+    token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) {
+    throw new CustomError("NOt authorized to access this route", 401);
+  }
+
+  try {
+    const decodedJwtPayload = JWT.verify(token, config.JWT_SECRET);
+    //_id, find user based on id, set this in req.user
+    const isModerator = await User.findOne({
+      _id: decodedJwtPayload._id,
+      role: { $in: ["ADMIN", "MODERATOR"] },
+    });
+    console.log(isModerator);
+    if (isModerator) next();
+    else throw new CustomError("NOt authorized to access this route", 401);
+  } catch (error) {
+    throw new CustomError("NOt authorized to access this route", 401);
+  }
+});

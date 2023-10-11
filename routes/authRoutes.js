@@ -10,6 +10,7 @@ import {
   changePassword,
   getProfile,
 } from "../controllers/auth.controller.js";
+import { isAdmin } from "../middlewares/auth.middleware.js";
 
 router.post("/registeruser", signUp);
 router.post("/loginuser", login);
