@@ -5,6 +5,7 @@ import cors from "cors";
 import morgan from "morgan";
 
 import authRoutes from "./routes/authRoutes.js";
+import collectionRoutes from "./routes/collectionRoutes.js";
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(morgan("tiny"));
 
 // routes
 app.use("/api/v1/auth/", authRoutes);
+app.use("/api/v1/", collectionRoutes);
 
 export default app;
