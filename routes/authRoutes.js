@@ -12,13 +12,13 @@ import {
 } from "../controllers/auth.controller.js";
 import { isAdmin } from "../middlewares/auth.middleware.js";
 
-router.post("/registeruser", signUp);
-router.post("/loginuser", login);
-router.get("/logoutuser", logout);
-router.post("/forgotpassword", forgotPassword);
-router.post("/resetPassword", resetPassword);
-router.post("/changepassword", changePassword);
-router.post("/user", getProfile);
+router.post("/signup", signUp);
+router.post("/login", login);
+router.get("/logout", logout);
+router.post("/forgot", forgotPassword);
+router.post("/password/reset/:resetToken", resetPassword);
+router.post("/password/change", changePassword);
+router.post("/profile", getProfile);
 router.get("/test", (req, res) => {
   res.status(200).json({
     success: true,
