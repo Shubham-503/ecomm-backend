@@ -6,6 +6,8 @@ import morgan from "morgan";
 
 import authRoutes from "./routes/authRoutes.js";
 import collectionRoutes from "./routes/collectionRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
 
 const app = express();
 
@@ -20,5 +22,7 @@ app.use(morgan("tiny"));
 // routes
 app.use("/api/v1/auth/", authRoutes);
 app.use("/api/v1/", collectionRoutes);
+app.use("/api/v1/", productRoutes);
+app.use("/api/v1/", couponRoutes);
 
 export default app;

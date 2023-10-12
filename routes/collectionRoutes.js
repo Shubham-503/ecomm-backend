@@ -1,4 +1,5 @@
 import express from "express";
+const router = express.Router();
 import {
   createCollection,
   deleteCollection,
@@ -6,7 +7,6 @@ import {
   updateCollection,
 } from "../controllers/collection.controller.js";
 import { isModerator } from "../middlewares/auth.middleware.js";
-const router = express.Router();
 
 router.get("/collections", getAllCollections);
 router.post("/collection", isModerator, createCollection);
