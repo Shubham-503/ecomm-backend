@@ -7,11 +7,16 @@ import asyncHandler from "../services/asyncHandler.js";
 import CustomError from "../utils/customError.js";
 import config from "../config/index.js";
 
+import cloudinary from "../utils/cloudinary.js";
+
+import { promisify } from "util";
+const cloudinaryUpload = promisify(cloudinary.uploader.upload);
+
 /**********************************************************
  * @ADD_PRODUCT
  * @route https://localhost:5000/api/product
  * @description Controller used for creating a new product
- * @description Only admin can create the coupon
+ * @description Only admin can create the product
  * @descriptio Uses AWS S3 Bucket for image upload
  * @returns Product Object
  *********************************************************/
@@ -41,21 +46,24 @@ export const addProduct = asyncHandler(async (req, res) => {
       }
 
       // handling images
+      console.log(files, fields);
       let imgArrayResp = Promise.all(
         Object.keys(files).map(async (filekey, index) => {
           const element = files[filekey];
-
           const data = fs.readFileSync(element.filepath);
+          try {
+            console.log(files.image.filepath);
+            const result = await cloudinaryUpload(`${files.image.filepath}`, {
+              public_id: `products/${productId}/photo_${index + 1}.png`,
+            });
 
-          const upload = await s3FileUpload({
-            bucketName: config.S3_BUCKET_NAME,
-            key: `products/${productId}/photo_${index + 1}.png`,
-            body: data,
-            contentType: element.mimetype,
-          });
-          return {
-            secure_url: upload.Location,
-          };
+            return {
+              secure_url: result.secure_url,
+            };
+          } catch (error) {
+            throw new CustomError("Something went wrong", 400);
+            //remove image
+          }
         })
       );
 

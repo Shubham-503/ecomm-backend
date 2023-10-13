@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import app from "./app.js";
 import config from "./config/index.js";
-
+import { v2 as cloudinary } from "cloudinary";
 //create a fn
 // run a fn
 // (async () => {})()
@@ -16,6 +16,12 @@ import config from "./config/index.js";
       console.log("ERROR: ", err);
       throw err;
     });
+
+    // cloudinary.config({
+    //   cloud_name: "dysvuuvmm",
+    //   api_key: "643825173662588",
+    //   api_secret: "VdUL13e5y4iOzAOwWwWyvQSNDIg",
+    // });
 
     const onListening = () => {
       console.log(`Listening on ${config.PORT}`);

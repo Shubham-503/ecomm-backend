@@ -8,6 +8,13 @@ import authRoutes from "./routes/authRoutes.js";
 import collectionRoutes from "./routes/collectionRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: "dysvuuvmm",
+  api_key: "643825173662588",
+  api_secret: "VdUL13e5y4iOzAOwWwWyvQSNDIg",
+});
 
 const app = express();
 
